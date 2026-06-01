@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema de Activación Supabase</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div id="estado">Iniciando proceso de activación...</div>
+    <ul id="lista"></ul>
+
+    <script>
+        // --- CONFIGURACIÓN: AQUÍ PONES TUS PROYECTOS ---
+        const proyectos = [
+            { nombre: "Proyecto 1", url: "https://gfyxxfasnsmuigqsolaf.supabase.co", key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmeXh4ZmFzbnNtdWlncXNvbGFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4NjA0MDIsImV4cCI6MjA3OTQzNjQwMn0.BcnNQAdX4PS9qq1-L2Dm6AA1z1UCJXIg-6B724vUpwk" },
+            { nombre: "Proyecto 2", url: "https://TU_ID_2.supabase.co", key: "TU_ANON_KEY_2" },
+            // Puedes seguir agregando líneas aquí abajo...
+        ];
+
+        async function activar() {
+            const lista = document.getElementById('lista');
+            
+            for (const p of proyectos) {
+                const item = document.createElement('li');
+                item.textContent = `Activando ${p.nombre}... `;
+                lista.appendChild(item);
+
+                try {
+                    const res = await fetch(`${p.url}/rest/v1/_mantenimiento`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': p.key,
+                            'Authorization': `Bearer ${p.key}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ creado_en: new Date() })
+                    });
+
+                    if (res.ok) {
+                        item.textContent += " ✅ ÉXITO";
+                        item.style.color = "green";
+                    } else {
+                        item.textContent += " ❌ ERROR " + res.status;
+                        item.style.color = "red";
+                    }
+                } catch (e) {
+                    item.textContent += " ⚠️ FALLO DE CONEXIÓN";
+                    item.style.color = "orange";
+                }
+            }
+            document.getElementById('estado').textContent = "Proceso terminado el: " + new Date().toLocaleString();
+        }
+
+        // Se ejecuta solo al cargar la página
+        window.onload = activar;
+    </script>
+</body>
+</html>
